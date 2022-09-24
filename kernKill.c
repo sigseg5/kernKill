@@ -11,10 +11,13 @@
 #define _GNU_SOURCE
 
 #include "macros.h"
+#include "proc.h"
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/reboot.h>
+#include <linux/sched.h>
 #include <linux/usb.h>
+#include <signal.h>
 
 // get this values by dmesg
 #define USB_VENDOR_ID (0x0951)  // USB device's vendor ID
@@ -31,7 +34,18 @@ static int etx_usb_probe(struct usb_interface *interface,
            id->idVendor, id->idProduct);
 
   if (id->idVendor == USB_VENDOR_ID && id->idProduct == USB_PRODUCT_ID) {
-    kernel_power_off();
+    // kernel_power_off();
+    struct task_struct *task;
+    for_each_process(task) {
+      printk(KERN_INFO "Process %i is named %s\n", task->pid, task->comm);
+      for (int i = 0; i < PROC_COUNT; i++) {
+        if (task->comm == KILL_PROC[PROC_COUNT]) {
+          // TODO: struct fix
+          kill_pid_info(SIGKILL, );
+          return 0;
+        }
+      }
+    }
     return 0;
   }
 
