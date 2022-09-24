@@ -1,5 +1,5 @@
 /*******************************************************************************
- *  \file       task.c
+ *  \file       kernKill.c
  *
  *  \details    kernKill USB driver
  *
