@@ -17,31 +17,38 @@
 #include <linux/reboot.h>
 #include <linux/sched.h>
 #include <linux/usb.h>
-#include <signal.h>
 
 // get this values by dmesg
 #define USB_VENDOR_ID (0x0951)  // USB device's vendor ID
 #define USB_PRODUCT_ID (0x172b) // USB device's product ID
 
+static int kill_proc_info(int sig, struct kernel_siginfo *info, pid_t pid) {
+  int error;
+  rcu_read_lock();
+  error = kill_pid_info(sig, info, find_vpid(pid));
+  rcu_read_unlock();
+  return error;
+}
 static int etx_usb_probe(struct usb_interface *interface,
                          const struct usb_device_id *id) {
   unsigned int i;
   unsigned int endpoints_count;
   struct usb_host_interface *iface_desc = interface->cur_altsetting;
+
   dev_info(&interface->dev,
            "USB Driver Probed: Vendor ID : 0x%02x,\t"
            "Product ID : 0x%02x\n",
            id->idVendor, id->idProduct);
 
-  if (id->idVendor == USB_VENDOR_ID && id->idProduct == USB_PRODUCT_ID) {
+  if (unlikely(id->idVendor == USB_VENDOR_ID &&
+               id->idProduct == USB_PRODUCT_ID)) {
     // kernel_power_off();
     struct task_struct *task;
     for_each_process(task) {
       printk(KERN_INFO "Process %i is named %s\n", task->pid, task->comm);
       for (int i = 0; i < PROC_COUNT; i++) {
-        if (task->comm == KILL_PROC[PROC_COUNT]) {
-          // TODO: struct fix
-          kill_pid_info(SIGKILL, );
+        if (unlikely(task->comm == KILL_PROC[PROC_COUNT])) {
+          kill_proc_info(SIGKILL, SEND_SIG_PRIV, (pid_t)task->pid);
           return 0;
         }
       }
