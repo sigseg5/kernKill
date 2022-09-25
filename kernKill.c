@@ -22,6 +22,22 @@
 #define USB_VENDOR_ID (0x0951)  // USB device's vendor ID
 #define USB_PRODUCT_ID (0x172b) // USB device's product ID
 
+int kill_pid_info(int sig, struct kernel_siginfo *info, struct pid *pid) {
+  int error = -ESRCH;
+  struct task_struct *p;
+
+  for (;;) {
+    rcu_read_lock();
+    p = pid_task(pid, PIDTYPE_PID);
+    // TODO: catch err
+    // if (p)
+    // error = group_send_sig_info(sig, info, p, PIDTYPE_TGID);
+    rcu_read_unlock();
+    if (likely(!p || error != -ESRCH))
+      return error;
+  }
+}
+
 static int kill_proc_info(int sig, struct kernel_siginfo *info, pid_t pid) {
   int error;
   rcu_read_lock();
