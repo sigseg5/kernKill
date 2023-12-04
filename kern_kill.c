@@ -1,11 +1,11 @@
 /*******************************************************************************
- *  \file       kernKill.c
+ *  \file       kern_kill.c
  *
  *  \details    kern_kill USB driver
  *
  *  \author     sigseg5
  *
- *  \Tested with 6.5.6-76060506-generic
+ *  \Tested on 6.5.6-76060506-generic  Linux kernel
  *
  *******************************************************************************/
 
