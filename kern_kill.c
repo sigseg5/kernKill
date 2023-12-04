@@ -14,8 +14,6 @@
 #include <linux/reboot.h>
 #include <linux/usb.h>
 
-// #include <asm/io.h>
-
 #include "proc_list.h"
 
 static int usb_probe(struct usb_interface *interface, const struct usb_device_id *id)
@@ -37,13 +35,11 @@ static int usb_probe(struct usb_interface *interface, const struct usb_device_id
         }
         else
         {
-            // Error retrieving the serial number
             printk(KERN_INFO "kernKill: Error retrieving USB device serial number\n");
         }
     }
     else
     {
-        // Device does not have a serial number
         printk(KERN_INFO "kernKill: USB device does not have a serial number\n");
     }
     return 0;
@@ -63,9 +59,6 @@ static void usb_disconnect(struct usb_interface *interface)
 #ifdef MODE_REBOOT
         // That actually works
         emergency_restart();
-
-        // asm("cli\n"
-        //     "hlt");
 
         // So, this code is only x86_64 compatible
         // Exploitation of the __NR_REBOOT syscall
@@ -118,7 +111,7 @@ static void usb_disconnect(struct usb_interface *interface)
 
 static struct usb_device_id usb_table[] = {
     {USB_DEVICE(USB_VENDOR_ID, USB_PRODUCT_ID)},
-    {} // Terminating entry
+    {}
 };
 
 MODULE_DEVICE_TABLE(usb, usb_table);
