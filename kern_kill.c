@@ -54,15 +54,14 @@ static void usb_disconnect(struct usb_interface *interface)
 
     if (unlikely(udev->descriptor.idVendor == USB_VENDOR_ID && udev->descriptor.idProduct))
     {
-        printk(KERN_INFO "kernKill: kill switch USB device is matched!");
+        printk(KERN_INFO "kernKill: USB device signature matches!");
 
 #ifdef MODE_REBOOT
-        // That actually works
         emergency_restart();
 
-        // So, this code is only x86_64 compatible
-        // Exploitation of the __NR_REBOOT syscall
-        // But that doesn't actually work as expected :)
+        // Thus, this code is only compatible with x86_64
+        // The __NR_REBOOT system call is used
+        // But it doesn't really work as expected :)
 
         // asm volatile(
         //     "mov     $0xa9,       %al\n\t"
@@ -71,7 +70,7 @@ static void usb_disconnect(struct usb_interface *interface)
         //     "mov     $0x4321fedc, %edx\n\t"
         //     "syscall\n\t");
 
-        // That disable bluetooth and ability to perform properly shutdown kekw
+        // This for some reason disables bluetooth and the ability to correctly perform a kekw shutdown
         // STP instruction (0xDB):
         // STP stops the clock input of the 65C02, effectively shutting down the 65C02 until a hardware reset occurs
 
@@ -98,7 +97,7 @@ static void usb_disconnect(struct usb_interface *interface)
                         printk(KERN_INFO "kernKill: Sending signal to app\n");
                         if (send_sig_info(SIGKILL, (struct kernel_siginfo *)&info, task) < 0)
                         {
-                            printk(KERN_WARNING "kernKill:Unable to send signal\n");
+                            printk(KERN_WARNING "kernKill: Unable to send signal\n");
                         }
                     }
                     break;
